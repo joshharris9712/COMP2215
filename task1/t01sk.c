@@ -1,4 +1,6 @@
-/* COMP2215 15/16: Task 01---SKELETON */
+/* COMP2215 15/16: Task 01---SKELETON 
+	REGULAR WORK
+*/
 
 /* For La Fortuna board 
 
@@ -97,7 +99,7 @@ void init(void) {
 
     /* ENABLE TIMER INTERRUPT */
 	
-	TIMSK0 |= _BV(OCIE0A);	
+	TIMSK0 |= _BV(OCIE0A);	//Setting the timer register to listen to timer 0
 
 }
 
