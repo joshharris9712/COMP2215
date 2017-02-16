@@ -260,11 +260,21 @@ void display_register(uint8_t reg) {
 	}
 }
 
-void display_sprite(char *spr, uint8_t x, uint8_t y, uint16_t col) {
+void display_sprite(uint8_t *spr, int x, int y, uint16_t col) {
 	
-	uint8_t i = 0;
-	uint8_t width = sizeof(spr);
-	uint8_t height = sizeof(&spr) >> 3;
+	
+	PGM_P fdata;
+	
+	fdata = spr;
+	//bits = sub_sprite[i];
+	uint8_t i = 0, j = 0, mask = 0x00, bits;
+	//uint8_t width = 
+	//display_char(48 + sizeof(&spr));
+	//uint8_t height = sizeof(&spr) >> 3;
+	uint8_t width = 8;
+	uint8_t height = 17;
+	
+	//display_char(width + 48);
 	
 	write_cmd(COLUMN_ADDRESS_SET);
     write_data16(x);
@@ -276,12 +286,17 @@ void display_sprite(char *spr, uint8_t x, uint8_t y, uint16_t col) {
 	
 	write_cmd(MEMORY_WRITE);
 	
-	for (i = 0, i<width, i++) {
-		bits = pgm_read_byte(spr[i]);
-        for(y=sp, mask=0x01; y<=ep; y++, mask<<=1){
+	while (1) {
+		bits = pgm_read_byte(fdata++);
+		if(bits==0x00){
+			break;
+		}
+		
+        for(j=0, mask=0x01; j<=width; j++, mask<<=1){
 			write_data16((bits & mask) ? col : display.background);
 		}
 	}
 	
 }
+
 
