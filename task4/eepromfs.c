@@ -1,5 +1,20 @@
 #include "eepromfs.h"
 
+typedef struct fileTable {
+	file_t[] files;
+	
+}
+
+typedef struct file {
+	uint8_t size;
+	uint8_t* start;
+} file_t;
+
+typedef struct fileblock {
+	
+	struct fileblock* next;
+} fileblock_t;
+
 void init_eepromfs(void){
 	
 }
@@ -26,12 +41,10 @@ void write(uint8_t filename, uint8_t *buff, uint16_t len){
 }
 
 void read(uint8_t filename,  uint8_t *buff, uint16_t len){
-	
+	int* ptr = 
+	 uint8_t byte = eeprom_read_byte((uint8_t*) ptr)
 }
 
 void delete(uint8_t filename){
-	int i = 0;
-	for(i=0; i<BLOCK_SIZE; i++){
-		eeprom_update_byte(fileStart+(8*i), 0x00);
-	}
+	
 }

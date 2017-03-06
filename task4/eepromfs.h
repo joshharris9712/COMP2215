@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/eeprom.h> 
+#include <stdio.h>
 
 
 

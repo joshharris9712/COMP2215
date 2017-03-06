@@ -262,7 +262,6 @@ void display_register(uint8_t reg) {
 
 void display_sprite(uint8_t *spr, int x, int y, uint16_t col) {
 	
-	
 	PGM_P fdata;
 	
 	fdata = spr;
