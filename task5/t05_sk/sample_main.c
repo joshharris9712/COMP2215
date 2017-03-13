@@ -2,6 +2,8 @@
 
 #include "os.h"
 
+#define NUMBERLINES 25
+#define LINELENGTH 64
 
 int blink(int);
 int update_dial(int);
@@ -13,6 +15,7 @@ void inplace_reverse(char * str, int k);
 FIL File;  						/* FAT File */
 
 int position = 0;
+
 
  
 
@@ -106,8 +109,30 @@ void inplace_reverse(char * str, int k)
 
 int check_switches(int state) {
 	
+	UINT numBytes;
+	char fileBuffer[NUMBERLINES][LINELENGTH+1];
+	
 	if (get_switch_press(_BV(SWN))) {
 			display_string("North\n");
+			if (f_open(&File, "file.txt", FA_READ) == FR_OK) {
+				display_string("OPEN");
+				int i = 0;
+				for(i=0; i<NUMBERLINES; i++){
+					f_read(&File, fileBuffer[i], LINELENGTH, &numBytes);
+					fileBuffer[i][LINELENGTH]='\0';
+					if(numBytes!=LINELENGTH){
+						break;
+					}
+				}
+				f_close(&File);
+				int j=0;
+				for(j=0; j<NUMBERLINES; j++){
+					display_string(fileBuffer[j]);
+				}
+				
+			} else {
+				laprintf("ERROR: %d\n", f_open(&File, "file.txt", FA_READ));
+			}
 	}
 		
 	if (get_switch_press(_BV(SWE))) {
@@ -124,9 +149,7 @@ int check_switches(int state) {
 		
 	if (get_switch_long(_BV(SWC))) {
 		f_mount(&FatFs, "", 0);
-		int res = f_open(&File, "file.txt", FA_WRITE | FA_OPEN_ALWAYS);
-		laprintf("Error code: %d\n", res);
-		if (res == FR_OK) {
+		if (f_open(&File, "file.txt", FA_WRITE | FA_OPEN_ALWAYS) == FR_OK) {
 			f_lseek(&File, f_size(&File));
 			f_printf(&File, "Encoder position is: %d \r\n", position);
 			f_close(&File);
