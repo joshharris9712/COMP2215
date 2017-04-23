@@ -42,6 +42,8 @@ int main(){
 			bullet.bottom=bullet_y+3;
 			fill_rectangle(bullet, WHITE);
 		} else {
+			bullet_x=0;
+			bullet_y=0;
 			fill_rectangle(bullet, BLACK);
 		}
 		
@@ -220,8 +222,8 @@ int checkShot() {
 		if((x_delta<8)&&(x_delta>-8)){
 			if((y_delta<12)&&(y_delta>-12)){
 				score+=100;
-				enemiesX[i] = rand() % 200;
-				enemiesY[i] = rand() % 150;
+				enemiesX[i] = rand() % 250;
+				enemiesY[i] = rand() % 180;
 				return i;
 			}
 		}
