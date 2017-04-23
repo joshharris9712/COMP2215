@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <avr/io.h>
 #include <util/delay.h>
@@ -6,10 +7,15 @@
 #include <avr/pgmspace.h>
 #include "lcd.h"
 #include "input.h"
+#include "laprintf.h"
 
 #define COMPASS_SWITCHES (_BV(SWW)|_BV(SWS)|_BV(SWE)|_BV(SWN))
+#define SWC    PE7
 
 void init();
+void checkCollision();
+void removeBullet();
+int checkShot();
 
 const uint8_t sub_sprite[] PROGMEM = {0x81, 0xFF, 0x7E, 0x18, 0x3C, 0x7E, 0x7E, 0xFF, 0xFF, 0xE7, 0xC3, 0xC3, 0xC3, 0xE7, 0x7E, 0x7E, 0x3C, 0x00};
 const uint8_t sub_sprint_size = 18;
