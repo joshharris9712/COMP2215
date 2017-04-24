@@ -7,8 +7,8 @@ volatile int enemiesY[10];
 volatile uint16_t enemiesCol[10];
 volatile rectangle enemiesBox[10];
 volatile float direction = 180.0;
-volatile int bullet_tick=0;
-volatile uint8_t player_x = 50, player_y = 50, bullet_x=0, bullet_y=0, alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0;
+volatile int bullet_tick=0, player_x = 50, player_y = 50, bullet_x=0, bullet_y=0;
+volatile uint8_t alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0;
 rectangle player_box, bullet;
 
 
@@ -36,6 +36,19 @@ int main(){
 			fill_rectangle(bullet, BLACK);
 			bullet_x+=5*(sin(bullet_d));
 			bullet_y+=5*(cos(bullet_d));
+			
+			if(bullet_x>=320){
+				bullet_x=1;
+			}
+			if(bullet_y>=240){
+				bullet_y=1;
+			}
+			if(bullet_x<=0){
+				bullet_x=319;
+			}
+			if(bullet_y<=0){
+				bullet_y=239;
+			}
 			bullet.left=bullet_x;
 			bullet.right=bullet_x+3;
 			bullet.top=bullet_y;
@@ -184,11 +197,17 @@ ISR( TIMER0_COMPA_vect ) {
 		
 		checkShot();
 		
-		if(player_x<0){
-			player_x=0;
+		if(player_x>=320){
+			player_x=1;
 		}
-		if(player_y<0){
-			player_y=0;
+		if(player_y>=240){
+			player_y=1;
+		}
+		if(player_x<=0){
+			player_x=319;
+		}
+		if(player_y<=0){
+			player_y=239;
 		}
 		redraw_flag=1;
 	 }else{
@@ -233,7 +252,7 @@ int checkShot() {
 
 void checkCollision() {
 	uint8_t i = 0;
-	signed char x_delta=0, y_delta=0;
+	signed int x_delta=0, y_delta=0;
 	
 	for(i=0; i<currentEnemyCount; i++){
 		x_delta=enemiesX[i]-player_x;
