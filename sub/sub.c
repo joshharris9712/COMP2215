@@ -8,9 +8,8 @@ volatile uint16_t enemiesCol[10];
 volatile rectangle enemiesBox[10];
 volatile float direction = 180.0;
 volatile int bullet_tick=0, player_x = 50, player_y = 50, bullet_x=0, bullet_y=0;
-volatile uint8_t alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0;
+volatile uint8_t alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0, enemy5flag=0, enemy6flag=0, enemy7flag=0;
 rectangle player_box, bullet;
-
 
 int main(){
 	float bullet_d = 0.0;
@@ -114,13 +113,13 @@ void init(){
 	init_lcd();
     set_frame_rate_hz(61);
     set_orientation(West);
-	enemiesX[0] = 40;
-	enemiesX[1] = 120;
-	enemiesX[2] = 200;
-	enemiesX[3] = 20;
+	enemiesX[0] = 200;
+	enemiesX[1] = 300;
+	enemiesX[2] = 100;
+	enemiesX[3] = 150;
 	
-	enemiesY[0] = 120;
-	enemiesY[1] = 160;
+	enemiesY[0] = 100;
+	enemiesY[1] = 150;
 	enemiesY[2] = 200;
 	enemiesY[3] = 20;
 	
@@ -234,15 +233,41 @@ ISR( TIMER0_COMPA_vect ) {
 
 int checkShot() {
 	uint8_t i=0;
-	signed char x_delta=0, y_delta=0;
+	signed int x_delta=0, y_delta=0;
+	int new_x, new_y;
 	for(i=0; i<currentEnemyCount; i++){
 		x_delta=enemiesX[i]-bullet_x+1;
 		y_delta=enemiesY[i]-bullet_y+1;
 		if((x_delta<8)&&(x_delta>-8)){
 			if((y_delta<12)&&(y_delta>-12)){
 				score+=100;
-				enemiesX[i] = rand() % 250;
-				enemiesY[i] = rand() % 180;
+				if(score>=1000&&!enemy5flag){
+					enemiesX[4] = 5;
+					enemiesY[4] = 5;
+					currentEnemyCount=5;
+					enemy5flag=1;
+				}
+				if(score>=2000&&!enemy6flag){
+					enemiesX[5] = 5;
+					enemiesY[5] = 5;
+					currentEnemyCount=6;
+					enemy6flag=1;
+				}
+				if(score>=3000&&!enemy7flag){
+					enemiesX[6] = 5;
+					enemiesY[6] = 5;
+					currentEnemyCount=7;
+					enemy7flag=1;
+				}
+				do{
+					new_x = rand() % 300;
+					new_y = rand() % 220;
+					enemiesX[i] = new_x;
+					enemiesY[i] = new_y;
+					x_delta = player_x - new_x;
+					y_delta = player_y - new_y;
+				}while((x_delta>-50&&x_delta>50)&&(y_delta>-50&&y_delta>50));
+					
 				return i;
 			}
 		}
