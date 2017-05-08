@@ -5,6 +5,7 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include "lcd.h"
 #include "input.h"
 #include "laprintf.h"
@@ -15,8 +16,10 @@
 void init();
 void checkCollision();
 void removeBullet();
+void updateHighScore();
 int checkShot();
 
+const uint16_t high_score_ptr = 0;
 const uint8_t sub_sprite[] PROGMEM = {0x81, 0xFF, 0x7E, 0x18, 0x3C, 0x7E, 0x7E, 0xFF, 0xFF, 0xE7, 0xC3, 0xC3, 0xC3, 0xE7, 0x7E, 0x7E, 0x3C, 0x00};
 const uint8_t sub_sprint_size = 18;
 const uint8_t jelly_sprite[] PROGMEM = {0x3C, 0x7E, 0xFF, 0xFF, 0xFF, 0x54, 0xD6, 0x92, 0xB2, 0xA6, 0xA4, 0xB6, 0x12, 0x00};

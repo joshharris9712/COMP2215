@@ -284,11 +284,18 @@ void checkCollision() {
 		y_delta=enemiesY[i]-player_y-4;
 		if((x_delta<8)&&(x_delta>-8)){
 			if((y_delta<12)&&(y_delta>-12)){
-				laprintf("GAME OVER! SCORE:%d", score);
+				updateHighScore();
+				laprintf("GAME OVER!     SCORE:%d     HIGH SCORE:%d", score, eeprom_read_word(high_score_ptr));
 				alive=0;
 				break;
 			}
 		}
+	}
+}
+
+void updateHighScore(){
+	if(score>((int) eeprom_read_word(high_score_ptr))){
+		eeprom_update_word(high_score_ptr, score);
 	}
 }
 
