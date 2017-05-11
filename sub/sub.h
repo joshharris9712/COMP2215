@@ -16,7 +16,6 @@
 void init();
 void checkCollision();
 void removeBullet();
-void updateHighScore();
 int checkShot();
 
 const uint16_t high_score_ptr = 0;

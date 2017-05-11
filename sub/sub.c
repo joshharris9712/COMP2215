@@ -8,7 +8,7 @@ volatile uint16_t enemiesCol[10];
 volatile rectangle enemiesBox[10];
 volatile float direction = 180.0;
 volatile int bullet_tick=0, player_x = 50, player_y = 50, bullet_x=0, bullet_y=0;
-volatile uint8_t alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0, enemy5flag=0, enemy6flag=0, enemy7flag=0;
+volatile uint8_t replayFlag=0, alive=1, redraw_flag = 0, tick_count = 0, currentEnemyCount = 4, shoot_flag=0, bullet_flag=0, enemy5flag=0, enemy6flag=0, enemy7flag=0;
 rectangle player_box, bullet;
 
 int main(){
@@ -23,65 +23,93 @@ int main(){
 	
 	sei();
 	
-	while(alive){
-		
-		if(shoot_flag){
-			bullet_d = direction;
-			shoot_flag=0;
-			bullet_flag=1;
-		}
-		
-		if(bullet_flag){
-			fill_rectangle(bullet, BLACK);
-			bullet_x+=5*(sin(bullet_d));
-			bullet_y+=5*(cos(bullet_d));
+	while(1){
+		if(alive){
+			while(alive){
 			
-			if(bullet_x>=320){
-				bullet_x=1;
+			if(shoot_flag){
+				bullet_d = direction;
+				shoot_flag=0;
+				bullet_flag=1;
 			}
-			if(bullet_y>=240){
-				bullet_y=1;
+		
+			if(bullet_flag){
+				fill_rectangle(bullet, BLACK);
+				bullet_x+=5*(sin(bullet_d));
+				bullet_y+=5*(cos(bullet_d));
+			
+				if(bullet_x>=320){
+					bullet_x=1;
+				}
+				if(bullet_y>=240){
+					bullet_y=1;
+				}
+				if(bullet_x<=0){
+					bullet_x=319;
+				}
+				if(bullet_y<=0){
+					bullet_y=239;
+				}
+				bullet.left=bullet_x;
+				bullet.right=bullet_x+3;
+				bullet.top=bullet_y;
+				bullet.bottom=bullet_y+3;
+				fill_rectangle(bullet, WHITE);
+			} else {
+				bullet_x=0;
+				bullet_y=0;
+				fill_rectangle(bullet, BLACK);
 			}
-			if(bullet_x<=0){
-				bullet_x=319;
+		
+			if(redraw_flag){
+				fill_rectangle(player_box, BLACK);
+				player_box.left=player_x;
+				player_box.right=player_x+8;
+				player_box.top=player_y;
+				player_box.bottom=player_y+18;
+				display_sprite(sub_sprite, player_x, player_y, YELLOW);
+				int i=0;
+				for(i=0; i<currentEnemyCount; i++){
+					fill_rectangle(enemiesBox[i], BLACK);
+					enemiesBox[i].left=enemiesX[i];
+					enemiesBox[i].right=enemiesX[i]+8;
+					enemiesBox[i].top=enemiesY[i];
+					enemiesBox[i].bottom=enemiesY[i]+14;
+					display_sprite(jelly_sprite, enemiesX[i], enemiesY[i], enemiesCol[i]);
+				}
+				redraw_flag=0;
+				checkCollision();
 			}
-			if(bullet_y<=0){
-				bullet_y=239;
-			}
-			bullet.left=bullet_x;
-			bullet.right=bullet_x+3;
-			bullet.top=bullet_y;
-			bullet.bottom=bullet_y+3;
-			fill_rectangle(bullet, WHITE);
-		} else {
-			bullet_x=0;
-			bullet_y=0;
-			fill_rectangle(bullet, BLACK);
+			_delay_ms(10);
+		}
 		}
 		
-		if(redraw_flag){
-			fill_rectangle(player_box, BLACK);
-			player_box.left=player_x;
-			player_box.right=player_x+8;
-			player_box.top=player_y;
-			player_box.bottom=player_y+18;
-			display_sprite(sub_sprite, player_x, player_y, YELLOW);
-			int i=0;
-			for(i=0; i<currentEnemyCount; i++){
-				fill_rectangle(enemiesBox[i], BLACK);
-				enemiesBox[i].left=enemiesX[i];
-				enemiesBox[i].right=enemiesX[i]+8;
-				enemiesBox[i].top=enemiesY[i];
-				enemiesBox[i].bottom=enemiesY[i]+14;
-				display_sprite(jelly_sprite, enemiesX[i], enemiesY[i], enemiesCol[i]);
-			}
-			redraw_flag=0;
-			checkCollision();
-		}
-		_delay_ms(10);
 
+		
+	
+	if(replayFlag==1){
+		clear_screen();
+		player_x=50;
+		player_y=50;
+		replayFlag=0;
+		alive=1;
+		score=0;
+		currentEnemyCount=4;
+		enemiesX[0] = 200;
+		enemiesX[1] = 300;
+		enemiesX[2] = 100;
+		enemiesX[3] = 150;
+	
+		enemiesY[0] = 100;
+		enemiesY[1] = 150;
+		enemiesY[2] = 200;
+		enemiesY[3] = 20;
+		bullet_x=0;
+		bullet_y=0;
+		bullet_flag=0;
+		shoot_flag=0;
+	} 
 	}
-
 	
 }
 
@@ -224,7 +252,13 @@ ISR( TIMER0_COMPA_vect ) {
 		if(!shoot_flag && !(_BV(SWC) & PINE)){
 			shoot_flag=1;
 			bullet_x = player_x;
-			bullet_y = player_y;
+			bullet_y = player_y;			
+		}
+	}
+	
+	if(!alive){
+		if(!(_BV(SWC) & PINE)){
+			replayFlag=1;
 		}
 	}
 
@@ -284,8 +318,9 @@ void checkCollision() {
 		y_delta=enemiesY[i]-player_y-4;
 		if((x_delta<8)&&(x_delta>-8)){
 			if((y_delta<12)&&(y_delta>-12)){
-				updateHighScore();
-				laprintf("GAME OVER!     SCORE:%d     HIGH SCORE:%d", score, eeprom_read_word(high_score_ptr));
+				replayFlag=0;
+				bullet_flag=0;
+				laprintf("GAME OVER!  SCORE:%d\nPRESS CENTRE BUTTON TO REPLAY", score);
 				alive=0;
 				break;
 			}
@@ -293,11 +328,6 @@ void checkCollision() {
 	}
 }
 
-void updateHighScore(){
-	if(score>((int) eeprom_read_word(high_score_ptr))){
-		eeprom_update_word(high_score_ptr, score);
-	}
-}
 
 	
 	
